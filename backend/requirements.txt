@@ -16,3 +16,5 @@ pdfkit==1.0.0
 Flask-CORS==4.0.0
 python-dotenv==1.0.0
 weasyprint==59.0
+setuptools==68.2.2
+bcrypt==4.0.1
