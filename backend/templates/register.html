@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Cervical Cancer Risk Assessment</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .container { border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    .btn { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Register</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="{{ category }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('register') }}" id="register-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="form-group">
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required>
+      </div>
+      <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+      </div>
+      <div class="form-group">
+        <label for="contact_number">Contact Number:</label>
+        <input type="text" id="contact_number" name="contact_number" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="occupation">Occupation:</label>
+        <input type="text" id="occupation" name="occupation" required>
+      </div>
+      <div class="form-group">
+        <label for="has_cancer">Do you have a cancer diagnosis?</label>
+        <select id="has_cancer" name="has_cancer" required>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="is_aware">Are you aware of cervical cancer risks?</label>
+        <select id="is_aware" name="is_aware" required>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="has_screening">Have you had cervical cancer screening?</label>
+        <select id="has_screening" name="has_screening" required>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('login_page') }}" id="login-link">Login here</a></p>
+  </div>
+
+  <script>
+    // Handle form submission with AJAX
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      fetch('{{ url_for("register") }}', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error('Registration failed. Please try again.');
+        }
+      })
+      .then(html => {
+        // Check if registration was successful by looking for a redirect or success message
+        if (html.includes('Login here') || html.includes('Registration successful')) {
+          alert('Registration successful! Please log in.');
+          window.location.href = '{{ url_for("login_page") }}';
+        } else {
+          // Update the page with the response (e.g., to show error messages)
+          document.open();
+          document.write(html);
+          document.close();
+        }
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+    });
+
+    // Handle navigation to login page
+    document.getElementById('login-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = this.href;
+    });
+  </script>
+</body>
+</html>

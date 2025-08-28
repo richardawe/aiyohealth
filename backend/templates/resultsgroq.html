@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cervical Cancer Risk Assessment Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .result-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .result-label {
+            font-weight: bold;
+            width: 200px;
+        }
+        .result-value {
+            flex: 1;
+        }
+        .risk-category {
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .low-risk {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .medium-risk {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .high-risk {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .recommendation {
+            background-color: #e2e3e5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        .recommendation ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .buttons {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 0 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cervical Cancer Risk Assessment Results</h1>
+        
+        <div class="result-row">
+            <div class="result-label">Name:</div>
+            <div class="result-value">{{ results.full_name }}</div>
+        </div>
+        
+        <div class="result-row">
+            <div class="result-label">Age:</div>
+            <div class="result-value">{{ results.age }}</div>
+        </div>
+        
+        <div class="risk-category {% if results.risk_category == 'Low Risk' %}low-risk{% elif results.risk_category == 'Medium Risk' %}medium-risk{% else %}high-risk{% endif %}">
+            {{ results.risk_category }}
+        </div>
+        
+        <div class="recommendation">
+            {{ results.recommendation | safe }}
+        </div>
+        
+        <div class="buttons">
+            <a href="/" class="btn">Start New Assessment</a>
+            <form method="POST" action="/" style="display: inline;">
+                <input type="hidden" name="generate_pdf" value="true">
+                {% for key, value in request.form.items() %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endfor %}
+                <button type="submit" class="btn">Download PDF Report</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

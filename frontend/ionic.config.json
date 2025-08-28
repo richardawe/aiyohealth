@@ -1,0 +1,8 @@
+{
+  "name": "aiyoapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite",
+  "id": "df87f100"
+}

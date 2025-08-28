@@ -1,0 +1,33 @@
+.case-study {
+  padding: 40px 0;
+  background-color: #ffffff;
+}
+
+.case-study-content h3 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.case-study-content h2 {
+  font-size: 2rem;
+  color: #444;
+}
+
+.case-study-content p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.case-study-btn .btn-default {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.case-study img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}

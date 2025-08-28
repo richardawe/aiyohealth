@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cervical Cancer Risk Assessment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 { text-align: center; }
+    .progress-container {
+      background-color: #eee;
+      border-radius: 30px;
+      height: 30px;
+      margin: 20px 0;
+      position: relative;
+    }
+    .progress-bar {
+      background-color: #4CAF50;
+      height: 100%;
+      width: 0%;
+      border-radius: 30px;
+      transition: width 0.3s ease-in-out;
+    }
+    .progress-text {
+      position: absolute;
+      left: 50%;
+      top: 5px;
+      transform: translateX(-50%);
+      font-weight: bold;
+    }
+    fieldset {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    fieldset legend {
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    select, input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    input[type="radio"], input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    .next-btn, button[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .error {
+      color: red;
+      background: #ffe6e6;
+      padding: 10px;
+      border-left: 4px solid red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Cervical Cancer Risk Assessment Tool</h1>
+  <p style="text-align:center;">Designed to promote preventive healthcare for women</p>
+
+  <!-- Progress bar -->
+  <div class="progress-container">
+    <div id="progress-bar" class="progress-bar"></div>
+    <div id="progress-text" class="progress-text">0% Complete</div>
+  </div>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="/">
+    
+    <!-- SECTION 1: Demographic Info -->
+    <fieldset class="section" id="demographic-info" style="display: block;">
+      <legend>Demographic Information</legend>
+      <div class="form-group">
+        <label for="full_name">Full Name (including middle initial):</label>
+        <input type="text" id="full_name" name="full_name" required>
+      </div>
+      <div class="form-group">
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+      </div>
+      <div class="form-group">
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required>
+      </div>
+      <div class="form-group">
+        <label for="ethnicity">Ethnicity:</label>
+        <select id="ethnicity" name="ethnicity" onchange="toggleEthnicityOther()" required>
+          <option value="">Select</option>
+          <option value="Hausa">Hausa</option>
+          <option value="Yoruba">Yoruba</option>
+          <option value="Igbo">Igbo</option>
+          <option value="Fulani">Fulani</option>
+          <option value="Kanuri">Kanuri</option>
+          <option value="Other">Other</option>
+        </select>
+        <div id="ethnicity_other" style="margin-top: 10px; display: none;">
+          <label for="ethnicity_other_input">Please specify:</label>
+          <input type="text" id="ethnicity_other_input" name="ethnicity_other_input">
+        </div>
+      </div>
+      <button type="button" class="next-btn" onclick="showNextSection('demographic-info', 'primary-symptoms')">Next</button>
+    </fieldset>
+
+    <!-- SECTION 2: Primary Symptoms -->
+    <fieldset class="section" id="primary-symptoms">
+      <legend>Primary Symptoms</legend>
+      <div class="form-group">
+        <label>Do you have abnormal vaginal bleeding?</label><br/>
+        <input type="radio" id="abnormal_bleeding_yes" name="abnormal_bleeding" value="yes" onchange="toggleBleedingType()" required> Yes<br/>
+        <input type="radio" id="abnormal_bleeding_no" name="abnormal_bleeding" value="no" onchange="toggleBleedingType()" required> No<br/>
+        <div id="bleeding_type" style="margin-top: 10px; display: none;">
+          <label for="bleeding_type">What type of abnormal bleeding?</label><br/>
+          <select name="bleeding_type">
+            <option value="">Select</option>
+            <option value="intermenstrual">Intermenstrual</option>
+            <option value="post-coital">Post-coital</option>
+            <option value="heavier periods">Heavier periods</option>
+            <option value="postmenopausal">Postmenopausal</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Do you have abnormal vaginal discharge?</label><br/>
+        <input type="radio" id="abnormal_discharge_yes" name="abnormal_discharge" value="yes" required> Yes<br/>
+        <input type="radio" id="abnormal_discharge_no" name="abnormal_discharge" value="no" required> No
+      </div>
+      <div class="form-group">
+        <label>Do you have lower abdominal pain?</label><br/>
+        <input type="radio" id="lower_abdominal_pain_yes" name="lower_abdominal_pain" value="yes" required> Yes<br/>
+        <input type="radio" id="lower_abdominal_pain_no" name="lower_abdominal_pain" value="no" required> No
+      </div>
+      <button type="button" class="next-btn" onclick="showNextSection('primary-symptoms', 'additional-symptoms')">Next</button>
+    </fieldset>
+
+    <!-- SECTION 3: Additional Symptoms -->
+    <fieldset class="section" id="additional-symptoms">
+      <legend>Additional Symptoms</legend>
+      <div class="form-group">
+        <label>Is sexual intercourse painful for you?</label><br/>
+        <input type="radio" id="painful_intercourse_yes" name="painful_intercourse" value="yes" required> Yes<br/>
+        <input type="radio" id="painful_intercourse_no" name="painful_intercourse" value="no" required> No
+      </div>
+
+      <div class="form-group">
+        <label>Are you experiencing a change in your menstrual periods?</label><br/>
+        <input type="radio" id="changed_periods_yes" name="changed_periods" value="yes" required> Yes<br/>
+        <input type="radio" id="changed_periods_no" name="changed_periods" value="no" required> No
+      </div>
+
+      <div class="form-group">
+        <label>Are you having unexplained weight loss?</label><br/>
+        <input type="radio" id="weight_loss_yes" name="weight_loss" value="yes" required> Yes<br/>
+        <input type="radio" id="weight_loss_no" name="weight_loss" value="no" required> No
+      </div>
+
+      <div class="form-group">
+        <label>Are you experiencing unusual fatigue?</label><br/>
+        <input type="radio" id="unusual_fatigue_yes" name="unusual_fatigue" value="yes" required> Yes<br/>
+        <input type="radio" id="unusual_fatigue_no" name="unusual_fatigue" value="no" required> No
+      </div>
+      <button type="button" class="next-btn" onclick="showNextSection('additional-symptoms', 'risk-factors')">Next</button>
+    </fieldset>
+
+    <!-- SECTION 4: Risk Factors -->
+    <fieldset class="section" id="risk-factors">
+      <legend>Risk Factors</legend>
+      <div class="form-group">
+        <label>Are you currently pregnant?</label><br/>
+        <input type="radio" id="is_pregnant_yes" name="is_pregnant" value="yes" required> Yes<br/>
+        <input type="radio" id="is_pregnant_no" name="is_pregnant" value="no" required> No
+      </div>
+      <div class="form-group">
+        <label>Number of sexual partners in lifetime?</label>
+        <select name="sexual_partners" required>
+          <option value="">Select</option>
+          <option value="0">0</option>
+          <option value="1–3">1–3</option>
+          <option value="4–7">4–7</option>
+          <option value=">8">>8</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>How old were you when you first had intercourse?</label>
+        <select name="first_intercourse_age" required>
+          <option value="">Select</option>
+          <option value="<16 years"><16 years</option>
+          <option value="17–20 years">17–20 years</option>
+          <option value=">21 years">>21 years</option>
+          <option value="Not applicable">Not applicable</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Do you use or have you used hormonal contraceptives?</label><br/>
+        <input type="radio" id="contraceptive_use_yes" name="contraceptive_use" value="yes" onchange="toggleContraceptiveYears()" required> Yes<br/>
+        <input type="radio" id="contraceptive_use_no" name="contraceptive_use" value="no" onchange="toggleContraceptiveYears()" required> No
+        <div id="contraceptive_use_years" style="margin-top: 10px; display: none;">
+          <label>For how long?</label>
+          <select name="contraceptive_use_years">
+            <option value=""><5 years</option>
+            <option value="5–9 years">5–9 years</option>
+            <option value=">10 years">>10 years</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Do you smoke?</label>
+        <select name="smoking_status" onchange="toggleCigarettesPerDay()" required>
+          <option value="">Select</option>
+          <option value="Never">Never</option>
+          <option value="Current">Current</option>
+          <option value="Previous">Previous</option>
+        </select>
+        <div id="cigarettes_per_day" style="margin-top: 10px; display: none;">
+          <label>Cigarettes per day:</label>
+          <select name="cigarettes_per_day">
+            <option value="">Select</option>
+            <option value="1–9/day">1–9/day</option>
+            <option value="10–19/day">10–19/day</option>
+            <option value=">20/day">>20/day</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Have you had a pap smear, HPV test or VIA test in the past?</label><br/>
+        <input type="radio" id="had_pap_smear_yes" name="had_pap_smear" value="yes" onchange="togglePapResult()" required> Yes<br/>
+        <input type="radio" id="had_pap_smear_no" name="had_pap_smear" value="no" onchange="togglePapResult()" required> No
+        <div id="pap_result" style="margin-top: 10px; display: none;">
+          <label>Was the result normal or abnormal?</label><br/>
+          <select name="pap_result">
+            <option value="">Select</option>
+            <option value="Normal">Normal</option>
+            <option value="Abnormal">Abnormal</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>What is your HIV status?</label>
+        <select name="hiv_status" required>
+          <option value="">Select</option>
+          <option value="Negative">Negative</option>
+          <option value="Positive">Positive</option>
+          <option value="Unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>How many children have you given birth to?</label>
+        <select name="parity" required>
+          <option value="">Select</option>
+          <option value="<5 children"><5 children</option>
+          <option value=">=5 children">&ge;5 children</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>What is your marital status?</label>
+        <select name="marital_status" required>
+          <option value="">Select</option>
+          <option value="Single">Single</option>
+          <option value="Married">Married</option>
+          <option value="Divorced">Divorced</option>
+        </select>
+      </div>
+      <button type="submit" class="next-btn">Calculate Risk</button>
+    </fieldset>
+  </form>
+</div>
+
+  <!-- Display Results -->
+  {% if result %}
+    <div class="result">
+      <h3>Assessment Result</h3>
+      {% if result.error %}
+        <p class="error">{{ result.error }}</p>
+      {% else %}
+        <p><strong>Rule-Based Score:</strong> {{ result.rule_based.risk_score }}% ({{ result.rule_based.risk_category }})</p>
+
+        <!-- Show Hybrid Model if Available -->
+        {% if result.hybrid and not result.hybrid.get('error') %}
+          <h4>Hybrid Prediction</h4>
+          <p><strong>ML Prediction:</strong> {{ result.hybrid.ml_prediction }} ({{ result.hybrid.ml_score }}%)</p>
+          <p><strong>Final Hybrid Score:</strong> {{ result.hybrid.final_score }}%</p>
+          <p><strong>Final Risk Category:</strong> {{ result.hybrid.final_category }}</p>
+        {% elif result.hybrid and result.hybrid.get('error') %}
+          <p style="color: orange;">ML Model unavailable: {{ result.hybrid.error }}</p>
+        {% endif %}
+
+        <h4>Rule-Based Recommendation</h4>
+        <pre>{{ result.rule_based.recommendation }}</pre>
+
+        {% if llm %}
+          <h4>Personalized Advice (LLM)</h4>
+          <pre>{{ llm }}</pre>
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // Toggle Other Ethnicity Input
+  function toggleEthnicityOther() {
+    const otherDiv = document.getElementById("ethnicity_other");
+    otherDiv.style.display = document.getElementById("ethnicity").value === "Other" ? "block" : "none";
+    updateProgress();
+  }
+
+  // Toggle Bleeding Type Selection
+  function toggleBleedingType() {
+    const selected = document.querySelector('input[name="abnormal_bleeding"]:checked');
+    const postcoitalDiv = document.getElementById("bleeding_type");
+    postcoitalDiv.style.display = selected && selected.value === "yes" ? "block" : "none";
+    updateProgress();
+  }
+
+  // Toggle Contraceptive Use Years
+  function toggleContraceptiveYears() {
+    const yesNo = document.getElementById("contraceptive_use_yes").checked;
+    document.getElementById("contraceptive_use_years").style.display = yesNo ? "block" : "none";
+    updateProgress();
+  }
+
+  // Toggle Cigarettes Per Day
+  function toggleCigarettesPerDay() {
+    const currentSmoker = document.getElementById("smoking_status").value === "Current";
+    document.getElementById("cigarettes_per_day").style.display = currentSmoker ? "block" : "none";
+    updateProgress();
+  }
+
+  // Toggle Pap Result Section
+  function togglePapResult() {
+    const hasPap = document.getElementById("had_pap_smear_yes").checked;
+    document.getElementById("pap_result").style.display = hasPap ? "block" : "none";
+    updateProgress();
+  }
+
+  // Update progress bar
+  function updateProgress() {
+    const totalFields = document.querySelectorAll("input[required], select[required]").length;
+    let filled = 0;
+
+    document.querySelectorAll("input[required], select[required]").forEach(field => {
+      if (field.type === "radio") {
+        if (document.querySelector(`input[name="${field.name}"]:checked`)) filled++;
+      } else if (field.type === "select-one") {
+        if (field.value) filled++;
+      } else {
+        if (field.value.trim()) filled++;
+      }
+    });
+
+    const progress = Math.round((filled / totalFields) * 100);
+    document.getElementById("progress-bar").style.width = progress + "%";
+    document.getElementById("progress-text").textContent = progress + "% Complete";
+  }
+
+  // Show next section
+  function showNextSection(currentId, nextId) {
+    const current = document.getElementById(currentId);
+    const inputs = current.querySelectorAll("input[required], select[required]");
+    let valid = true;
+
+    inputs.forEach(input => {
+      if (input.type === "radio") {
+        if (!document.querySelector(`input[name="${input.name}"]:checked`)) valid = false;
+      } else if (!input.value || input.value === "Select") {
+        valid = false;
+      }
+    });
+
+    if (valid) {
+      document.getElementById(nextId).style.display = "block";
+      current.style.display = "none";
+    } else {
+      alert("Please complete all required fields.");
+    }
+
+    updateProgress();
+  }
+
+  // Initialize
+  window.onload = () => {
+    document.getElementById("demographic-info").style.display = "block";
+    document.querySelectorAll("input, select").forEach(f => f.addEventListener("change", updateProgress));
+    updateProgress();
+  };
+</script>
+</body>
+</html>

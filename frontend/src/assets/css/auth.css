@@ -1,0 +1,321 @@
+/* Login Styles */
+.login-container {
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+.login-logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.login-logo img {
+  max-width: 180px;
+}
+.login-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.form-group {
+  margin-bottom: 20px;
+}
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+}
+.alert {
+  display: none;
+  margin-top: 20px;
+}
+.alert.alert-danger,
+.alert.alert-success {
+  display: block;
+}
+.forgot-password {
+  text-align: center;
+  margin-top: 10px;
+}
+.bg-login {
+  background-color: #f7f9fc;
+  min-height: 100vh;
+  padding: 40px 0;
+}
+.form-control::placeholder {
+  color: #999;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+.form-control:focus::placeholder {
+  opacity: 0.3;
+}
+.account-links-container {
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.forgot-password-link,
+.register-link {
+  color: #6c757d;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+.forgot-password-link:hover,
+.register-link:hover {
+  color: #0056b3;
+}
+
+.form-section {
+  display: none;
+}
+.form-section.active {
+  display: block;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.form-control, .form-select {
+  border-radius: 5px;
+  padding: 0.75rem;
+}
+.form-check {
+  margin-right: 1rem;
+}
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.btn-nav {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+.btn-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.progress-bar-container {
+  width: 100%;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+.progress-bar {
+  height: 20px;
+  background-color: #007bff;
+  border-radius: 5px;
+  transition: width 0.3s ease-in-out;
+}
+.progress-text {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 0.6rem;
+}
+.results-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+.results-card h2, .results-card h3, .results-card h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.risk-percentage {
+  font-weight: bold;
+  color: #dc3545;
+}
+.risk-category.low {
+  color: #28a745;
+}
+.risk-category.moderate {
+  color: #ffc107;
+}
+.risk-category.high {
+  color: #dc3545;
+}
+.warning {
+  margin-top: 20px;
+  color: #dc3545;
+  font-style: italic;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+.actions .btn-default {
+  padding: 0.5rem 1rem;
+}
+.actions .btn-outline-primary {
+  padding: 0.5rem 1rem;
+}
+.symptom-history-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+.symptom-history-date {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.symptom-detail {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.symptom-label {
+  font-weight: 500;
+}
+.symptom-value {
+  color: #333;
+}
+.symptom-highlight {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.MuiFormControl-root {
+  margin-bottom: 20px;
+}
+.MuiFormLabel-root {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Register Styles */
+.register-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+.register-logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.register-logo img {
+  max-width: 180px;
+}
+.register-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.form-control {
+  width: 100%;
+  padding: 15px 25px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+.form-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+.form-check {
+  padding-left: 25px;
+  margin-bottom: 15px;
+}
+.form-check-input {
+  margin-top: 8px;
+  margin-left: -25px;
+}
+.form-check-label {
+  margin-top: 8px;
+  font-size: 14px;
+}
+.btn-register {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+}
+.bg-register {
+  background-color: #f7f9fc;
+  min-height: 100vh;
+  padding: 40px 0;
+}
+
+/* Admin Styles */
+.gen-layout {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+@media (max-width: 1200px) {
+  .gen-layout {
+    max-width: 100%;
+    padding: 40px 15px;
+  }
+}
+@media (max-width: 768px) {
+  .gen-layout {
+    padding: 30px 10px;
+  }
+}
+
+/* Recommendation Styles */
+.recommendation-text {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.recommendation-details {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.recommendation-details li {
+    margin-bottom: 0.5rem;
+}
+
+.card .card-header h5 {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+}

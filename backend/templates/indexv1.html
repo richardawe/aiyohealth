@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cervical Cancer Risk Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function toggleBleedingType() {
+            document.getElementById('bleeding_type').style.display = 
+                document.getElementById('abnormal_bleeding').checked ? 'block' : 'none';
+        }
+        function toggleContraceptiveYears() {
+            document.getElementById('contraceptive_use_years').style.display = 
+                document.getElementById('contraceptive_use').checked ? 'block' : 'none';
+        }
+        function toggleCigarettesPerDay() {
+            document.getElementById('cigarettes_per_day').style.display = 
+                document.getElementById('smoking_status').value === 'Current' ? 'block' : 'none';
+        }
+        function togglePapResult() {
+            document.getElementById('pap_result').style.display = 
+                document.getElementById('had_pap_smear').checked ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cervical Cancer Risk Assessment Tool</h1>
+        <p>Based on the March 2021 risk assessment guidelines</p>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="POST" action="/">
+            <h2>Demographic Information</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="full_name">Full Name (including middle initial):</label>
+                    <input type="text" id="full_name" name="full_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" id="dob" name="dob" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address">
+                </div>
+                <div class="form-group">
+                    <label for="ethnicity">Ethnicity:</label>
+                    <select id="ethnicity" name="ethnicity">
+                        <option value="">Select</option>
+                        <option value="Asian">Asian</option>
+                        <option value="Black">Black</option>
+                        <option value="Hispanic">Hispanic</option>
+                        <option value="White">White</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <h2>Primary Symptoms</h2>
+            <div class="form-group">
+                <input type="checkbox" id="abnormal_bleeding" name="abnormal_bleeding" onchange="toggleBleedingType()">
+                <label for="abnormal_bleeding">Do you have abnormal vaginal bleeding?</label>
+                <div id="bleeding_type" style="display:none;">
+                    <label for="bleeding_type">What type of abnormal bleeding?</label>
+                    <select id="bleeding_type" name="bleeding_type">
+                        <option value="">Select</option>
+                        <option value="intermenstrual">Intermenstrual</option>
+                        <option value="post-coital">Post-coital</option>
+                        <option value="heavier periods">Heavier periods</option>
+                        <option value="postmenopausal">Postmenopausal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="abnormal_discharge" name="abnormal_discharge">
+                <label for="abnormal_discharge">Do you have abnormal vaginal discharge?</label>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="lower_abdominal_pain" name="lower_abdominal_pain">
+                <label for="lower_abdominal_pain">Do you have lower abdominal pain?</label>
+            </div>
+
+            <h2>Additional Symptoms</h2>
+            <div class="form-group">
+                <input type="checkbox" id="painful_intercourse" name="painful_intercourse">
+                <label for="painful_intercourse">Is sexual intercourse painful for you?</label>
+            </div>
+            {% if request.form.get('dob') %}
+                {% set age = calculate_age(request.form.get('dob')) %}
+                {% if age < 50 %}
+                    <div class="form-group">
+                        <input type="checkbox" id="changed_periods" name="changed_periods">
+                        <label for="changed_periods">Are you experiencing a change in your menstrual periods?</label>
+                        <input type="hidden" name="show_changed_periods" value="yes">
+                    </div>
+                {% else %}
+                    <p>(Postmenopausal - period change question skipped)</p>
+                    <input type="hidden" name="show_changed_periods" value="no">
+                {% endif %}
+            {% else %}
+                <div class="form-group">
+                    <input type="checkbox" id="changed_periods" name="changed_periods">
+                    <label for="changed_periods">Are you experiencing a change in your menstrual periods?</label>
+                    <input type="hidden" name="show_changed_periods" value="yes">
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <input type="checkbox" id="weight_loss" name="weight_loss">
+                <label for="weight_loss">Are you having unexplained weight loss?</label>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="unusual_fatigue" name="unusual_fatigue">
+                <label for="unusual_fatigue">Are you experiencing unusual fatigue?</label>
+            </div>
+
+            <h2>Risk Factors</h2>
+            <div class="form-group">
+                <input type="checkbox" id="is_pregnant" name="is_pregnant">
+                <label for="is_pregnant">Are you currently pregnant?</label>
+            </div>
+            <div class="form-group">
+                <label for="sexual_partners">Number of sexual partners in lifetime?</label>
+                <select id="sexual_partners" name="sexual_partners">
+                    <option value="">Select</option>
+                    <option value="0">0</option>
+                    <option value="1-3">1-3</option>
+                    <option value="4-7">4-7</option>
+                    <option value=">8">>8</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="first_intercourse_age">How old were you when you first had intercourse?</label>
+                <select id="first_intercourse_age" name="first_intercourse_age">
+                    <option value="">Select</option>
+                    <option value="<16 years"><16 years</option>
+                    <option value="17-20 years">17-20 years</option>
+                    <option value=">21 years">>21 years</option>
+                    <option value="Not applicable">Not applicable</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="contraceptive_use" name="contraceptive_use" onchange="toggleContraceptiveYears()">
+                <label for="contraceptive_use">Do you use or have you used hormonal contraceptives?</label>
+                <div id="contraceptive_use_years" style="display:none;">
+                    <label for="contraceptive_use_years">For how long?</label>
+                    <select id="contraceptive_use_years" name="contraceptive_use_years">
+                        <option value="">Select</option>
+                        <option value="<5 years"><5 years</option>
+                        <option value="5-9 years">5-9 years</option>
+                        <option value=">10 years">>10 years</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="smoking_status">Do you smoke?</label>
+                <select id="smoking_status" name="smoking_status" onchange="toggleCigarettesPerDay()">
+                    <option value="">Select</option>
+                    <option value="Never">Never</option>
+                    <option value="Current">Current</option>
+                    <option value="Previous">Previous</option>
+                </select>
+                <div id="cigarettes_per_day" style="display:none;">
+                    <label for="cigarettes_per_day">Cigarettes per day:</label>
+                    <select id="cigarettes_per_day" name="cigarettes_per_day">
+                        <option value="">Select</option>
+                        <option value="1-9">1-9</option>
+                        <option value="10-19">10-19</option>
+                        <option value=">20">>20</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="had_pap_smear" name="had_pap_smear" onchange="togglePapResult()">
+                <label for="had_pap_smear">Have you had a pap smear, HPV test or VIA test in the past?</label>
+                <div id="pap_result" style="display:none;">
+                    <label for="pap_result">Was the result normal or abnormal?</label>
+                    <select id="pap_result" name="pap_result">
+                        <option value="">Select</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Abnormal">Abnormal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="hiv_status">What is your HIV status?</label>
+                <select id="hiv_status" name="hiv_status">
+                    <option value="">Select</option>
+                    <option value="Negative">Negative</option>
+                    <option value="Positive">Positive</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="parity">How many children have you given birth to?</label>
+                <select id="parity" name="parity">
+                    <option value="">Select</option>
+                    <option value="<5 children"><5 children</option>
+                    <option value=">5 children">>5 children</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="marital_status">What is your marital status?</label>
+                <select id="marital_status" name="marital_status">
+                    <option value="">Select</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Divorced">Divorced</option>
+                </select>
+            </div>
+
+            <button type="submit">Calculate Risk</button>
+        </form>
+    </div>
+</body>
+</html>

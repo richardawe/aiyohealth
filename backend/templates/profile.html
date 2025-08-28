@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Cervical Cancer Risk Assessment</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .container { border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    .btn { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    .btn:hover { background-color: #45a049; }
+    .error { color: red; }
+    .success { color: green; }
+    .history { margin-top: 20px; }
+    .history table { width: 100%; border-collapse: collapse; }
+    .history th, .history td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .history th { background-color: #f2f2f2; }
+    .nav a, .nav button { margin-right: 10px; padding: 8px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; }
+    .nav button#logout-btn { background-color: #d33; }
+    .nav button#logout-btn:hover { background-color: #b32d2d; }
+    .password-error { color: red; font-size: 0.9em; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>User Profile</h1>
+
+    <!-- Navigation -->
+    <div class="nav">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      {% if user.role == 'admin' %}
+        <a href="{{ url_for('admin_users') }}">Admin Dashboard</a>
+      {% endif %}
+      {% if user.role in ['admin', 'provider'] %}
+        <a href="{{ url_for('provider_patients') }}">Provider Dashboard</a>
+      {% endif %}
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="{{ category }}">{{ message | safe }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Profile Update Form -->
+    <h2>Update Profile</h2>
+    <form method="POST" action="{{ url_for('profile_settings') }}" id="profile-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="{{ user.username | safe }}" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email | safe }}" required>
+      </div>
+      <div class="form-group">
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" value="{{ user.state | default('') | safe }}">
+      </div>
+      <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" value="{{ user.city | default('') | safe }}">
+      </div>
+      <div class="form-group">
+        <label for="contact_number">Contact Number:</label>
+        <input type="text" id="contact_number" name="contact_number" value="{{ user.contact_number | default('') | safe }}">
+      </div>
+      <div class="form-group">
+        <label for="occupation">Occupation:</label>
+        <input type="text" id="occupation" name="occupation" value="{{ user.occupation | default('') | safe }}">
+      </div>
+      <div class="form-group">
+        <label for="has_cancer">Has Cancer:</label>
+        <select id="has_cancer" name="has_cancer" required>
+          <option value="yes" {% if user.has_cancer == 'yes' %}selected{% endif %}>Yes</option>
+          <option value="no" {% if user.has_cancer == 'no' %}selected{% endif %}>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="is_aware">Aware of Cervical Cancer:</label>
+        <select id="is_aware" name="is_aware" required>
+          <option value="yes" {% if user.is_aware == 'yes' %}selected{% endif %}>Yes</option>
+          <option value="no" {% if user.is_aware == 'no' %}selected{% endif %}>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="has_screening">Has Screening:</label>
+        <select id="has_screening" name="has_screening" required>
+          <option value="yes" {% if user.has_screening == 'yes' %}selected{% endif %}>Yes</option>
+          <option value="no" {% if user.has_screening == 'no' %}selected{% endif %}>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="current_password">Current Password (for password change):</label>
+        <input type="password" id="current_password" name="current_password">
+        <p class="password-error" id="current-password-error">Please enter your current password to change it.</p>
+      </div>
+      <div class="form-group">
+        <label for="new_password">New Password:</label>
+        <input type="password" id="new_password" name="new_password">
+        <p class="password-error" id="new-password-error">New password must be at least 8 characters long.</p>
+      </div>
+      <button type="submit" class="btn">Update Profile</button>
+    </form>
+
+    <!-- Medical History -->
+    {% if assessment_exists %}
+      <div class="history">
+        <h2>Medical History</h2>
+        {% if history %}
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Risk Score</th>
+                <th>Risk Category</th>
+                <th>Scenario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in history %}
+                <tr>
+                  <td>{{ record.logged_at.strftime('%Y-%m-%d %H:%M:%S') | safe }}</td>
+                  <td>{{ record.risk_score | safe }}</td>
+                  <td>{{ record.risk_category | safe }}</td>
+                  <td>{{ record.scenario | safe }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No medical history available.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    // Client-side validation for password fields
+    const form = document.getElementById('profile-form');
+    const currentPasswordInput = document.getElementById('current_password');
+    const newPasswordInput = document.getElementById('new_password');
+    const currentPasswordError = document.getElementById('current-password-error');
+    const newPasswordError = document.getElementById('new-password-error');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      let valid = true;
+
+      // Reset error messages
+      currentPasswordError.style.display = 'none';
+      newPasswordError.style.display = 'none';
+
+      // Validate password fields if either is filled
+      if (currentPasswordInput.value || newPasswordInput.value) {
+        if (!currentPasswordInput.value) {
+          currentPasswordError.style.display = 'block';
+          valid = false;
+        }
+        if (!newPasswordInput.value || newPasswordInput.value.length < 8) {
+          newPasswordError.style.display = 'block';
+          valid = false;
+        }
+      }
+
+      if (!valid) return;
+
+      const formData = new FormData(form);
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'include'
+        });
+
+        if (response.redirected) {
+          window.location.href = response.url;
+          return;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          alert(data.message || 'Profile updated successfully');
+          window.location.reload();
+        } else {
+          alert(data.message || 'Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Profile update error:', error);
+        alert('An error occurred while updating the profile.');
+      }
+    });
+
+    // Logout button handler
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('{{ url_for("logout") }}', {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert(data.message || 'Logged out successfully');
+          window.location.href = '{{ url_for("login") }}';
+        } else {
+          alert(data.message || 'Logout failed');
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('An error occurred during logout. Redirecting to login.');
+        window.location.href = '{{ url_for("login") }}';
+      }
+    });
+  </script>
+</body>
+</html>

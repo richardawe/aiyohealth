@@ -1,0 +1,32 @@
+<!-- templates/result.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assessment Result</title>
+</head>
+<body>
+  <h1>Result for {{ result.patient.age }}-year-old Patient</h1>
+
+  <h3>Rule-Based Risk Score</h3>
+  <p>Risk Score: {{ result.rule.risk_score }}%</p>
+  <p>Category: {{ result.rule.risk_category }}</p>
+  <pre>{{ result.rule.recommendation }}</pre>
+
+  {% if result.hybrid %}
+    <h3>Hybrid Risk Score</h3>
+    {% if result.hybrid.error %}
+      <p style="color:red;">{{ result.hybrid.error }}</p>
+    {% else %}
+      <p>ML Prediction: {{ result.hybrid.ml_prediction }} ({{ result.hybrid.ml_score }}%)</p>
+      <p>Final Score: {{ result.hybrid.final_score }}% ({{ result.hybrid.final_category }})</p>
+    {% endif %}
+  {% endif %}
+
+  <h3>Personalized Advice</h3>
+  <pre>{{ result.llm }}</pre>
+
+  <a href="{{ url_for('download_report') }}">Download PDF Report</a>
+</body>
+</html>

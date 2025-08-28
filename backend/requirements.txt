@@ -1,0 +1,16 @@
+flask
+flask_sqlalchemy
+psycopg2-binary
+pandas
+numpy
+fpdf
+scikit-learn 
+joblib 
+pdfplumber 
+requests
+beautifulsoup4
+graphviz
+pdfkit
+flask_cors
+python-dotenv
+weasyprint

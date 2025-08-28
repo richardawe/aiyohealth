@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cervical Cancer Risk Assessment Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2, h3, h4 {
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .next-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .section {
+      display: none;
+      margin-bottom: 20px;
+    }
+    #demographic-info {
+      display: block;
+    }
+    .progress-container {
+      height: 20px;
+      background-color: #f3f3f3;
+      border-radius: 10px;
+      margin: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #4CAF50;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .progress-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      line-height: 20px;
+      color: #333;
+      font-weight: bold;
+    }
+    fieldset {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+    }
+    legend {
+      font-weight: bold;
+      padding: 0 10px;
+    }
+    #result {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cervical Cancer Risk Assessment Tool</h1>
+    <p style="text-align:center;">Designed to promote preventive healthcare for women</p>
+
+    <!-- Progress bar -->
+    <div class="progress-container">
+      <div id="progress-bar" class="progress-bar"></div>
+      <div id="progress-text" class="progress-text">0% Complete</div>
+    </div>
+
+    {% if risk_score %}
+      <div id="result">
+        <h2>Risk Score: {{ risk_score }}%</h2>
+        <h3>Risk Category: {{ risk_category }}</h3>
+        <h4>Scenario: {{ scenario }}</h4>
+        <h4>Predefined Recommendations:</h4>
+        <p>{{ predefined_recommendations | replace('\n', '<br>') | safe }}</p>
+        <h4>Personalized Recommendations:</h4>
+        <p>{{ personalized_recommendations | replace('\n', '<br>') | safe }}</p>
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/">
+      <!-- SECTION 1: Demographic Info -->
+      <fieldset class="section" id="demographic-info" style="display: block;">
+        <legend>Demographic Information</legend>
+        <div class="form-group">
+          <label for="full_name">Full Name (including middle initial):</label>
+          <input type="text" id="full_name" name="full_name" required>
+        </div>
+        <div class="form-group">
+          <label for="dob">Date of Birth:</label>
+          <input type="date" id="dob" name="dob" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Address:</label>
+          <input type="text" id="address" name="address" required>
+        </div>
+        <div class="form-group">
+          <label for="ethnicity">Ethnicity:</label>
+          <select id="ethnicity" name="ethnicity" onchange="toggleEthnicityOther()" required>
+            <option value="">Select</option>
+            <option value="Hausa">Hausa</option>
+            <option value="Yoruba">Yoruba</option>
+            <option value="Igbo">Igbo</option>
+            <option value="Fulani">Fulani</option>
+            <option value="Kanuri">Kanuri</option>
+            <option value="Other">Other</option>
+          </select>
+          <div id="ethnicity_other" style="margin-top: 10px; display: none;">
+            <label for="ethnicity_other_input">Please specify:</label>
+            <input type="text" id="ethnicity_other_input" name="ethnicity_other_input">
+          </div>
+        </div>
+        <button type="button" class="next-btn" onclick="showNextSection('demographic-info', 'primary-symptoms')">Next</button>
+      </fieldset>
+
+      <!-- SECTION 2: Primary Symptoms -->
+      <fieldset class="section" id="primary-symptoms">
+        <legend>Primary Symptoms</legend>
+        <div class="form-group">
+          <label>Do you have abnormal vaginal bleeding?</label><br/>
+          <input type="radio" id="abnormal_bleeding_yes" name="abnormal_vaginal_bleeding" value="yes" onchange="toggleBleedingType()" required> Yes<br/>
+          <input type="radio" id="abnormal_bleeding_no" name="abnormal_vaginal_bleeding" value="no" onchange="toggleBleedingType()" required> No<br/>
+          <div id="bleeding_type" style="margin-top: 10px; display: none;">
+            <label for="bleeding_type_select">What type of abnormal bleeding?</label><br/>
+            <select id="bleeding_type_select" name="bleeding_type">
+              <option value="">Select</option>
+              <option value="intermenstrual">Intermenstrual</option>
+              <option value="post-coital">Post-coital</option>
+              <option value="heavier periods">Heavier periods</option>
+              <option value="postmenopausal">Postmenopausal</option>
+            </select>
+            <input type="hidden" id="is_post_coital_or_post_menopausal" name="is_post_coital_or_post_menopausal" value="no">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Do you have abnormal vaginal discharge?</label><br/>
+          <input type="radio" id="abnormal_discharge_yes" name="abnormal_vaginal_discharge" value="yes" required> Yes<br/>
+          <input type="radio" id="abnormal_discharge_no" name="abnormal_vaginal_discharge" value="no" required> No
+        </div>
+        <div class="form-group">
+          <label>Do you have lower abdominal pain?</label><br/>
+          <input type="radio" id="lower_abdominal_pain_yes" name="lower_abdominal_pain" value="yes" required> Yes<br/>
+          <input type="radio" id="lower_abdominal_pain_no" name="lower_abdominal_pain" value="no" required> No
+        </div>
+        <button type="button" class="next-btn" onclick="showNextSection('primary-symptoms', 'additional-symptoms')">Next</button>
+      </fieldset>
+
+      <!-- SECTION 3: Additional Symptoms -->
+      <fieldset class="section" id="additional-symptoms">
+        <legend>Additional Symptoms</legend>
+        <div class="form-group">
+          <label>Is sexual intercourse painful for you?</label><br/>
+          <input type="radio" id="painful_intercourse_yes" name="dyspareunia" value="yes" required> Yes<br/>
+          <input type="radio" id="painful_intercourse_no" name="dyspareunia" value="no" required> No
+        </div>
+        <div class="form-group">
+          <label>Are you experiencing a change in your menstrual periods?</label><br/>
+          <input type="radio" id="changed_periods_yes" name="change_in_periods" value="yes" required> Yes<br/>
+          <input type="radio" id="changed_periods_no" name="change_in_periods" value="no" required> No
+        </div>
+        <div class="form-group">
+          <label>Are you having unexplained weight loss?</label><br/>
+          <input type="radio" id="weight_loss_yes" name="weight_loss" value="yes" required> Yes<br/>
+          <input type="radio" id="weight_loss_no" name="weight_loss" value="no" required> No
+        </div>
+        <div class="form-group">
+          <label>Are you experiencing unusual fatigue?</label><br/>
+          <input type="radio" id="unusual_fatigue_yes" name="unusual_fatigue" value="yes" required> Yes<br/>
+          <input type="radio" id="unusual_fatigue_no" name="unusual_fatigue" value="no" required> No
+        </div>
+        <button type="button" class="next-btn" onclick="showNextSection('additional-symptoms', 'risk-factors')">Next</button>
+      </fieldset>
+
+      <!-- SECTION 4: Risk Factors -->
+      <fieldset class="section" id="risk-factors">
+        <legend>Risk Factors</legend>
+        <div class="form-group">
+          <label>Are you currently pregnant?</label><br/>
+          <input type="radio" id="is_pregnant_yes" name="is_pregnant" value="yes" required> Yes<br/>
+          <input type="radio" id="is_pregnant_no" name="is_pregnant" value="no" required> No
+        </div>
+        <div class="form-group">
+          <label>Number of sexual partners in lifetime?</label>
+          <select name="sexual_partners" required>
+            <option value="">Select</option>
+            <option value="0">0</option>
+            <option value="1–3">1–3</option>
+            <option value="4–7">4–7</option>
+            <option value=">8">>8</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>How old were you when you first had intercourse?</label>
+          <select name="age_first_intercourse" required>
+            <option value="">Select</option>
+            <option value="<16 years"><16 years</option>
+            <option value="17–20 years">17–20 years</option>
+            <option value=">21 years">>21 years</option>
+            <option value="Not applicable">Not applicable</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Do you use or have you used hormonal contraceptives?</label><br/>
+          <input type="radio" id="contraceptive_use_yes" name="oral_contraceptive_use" value="yes" onchange="toggleContraceptiveYears()" required> Yes<br/>
+          <input type="radio" id="contraceptive_use_no" name="oral_contraceptive_use" value="no" onchange="toggleContraceptiveYears()" required> No
+          <div id="contraceptive_use_years" style="margin-top: 10px; display: none;">
+            <label>For how long?</label>
+            <select name="contraceptive_years">
+              <option value="<5 years"><5 years</option>
+              <option value="5–9 years">5–9 years</option>
+              <option value=">10 years">>10 years</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Do you smoke?</label>
+          <select name="smoking" onchange="toggleCigarettesPerDay()" required>
+            <option value="">Select</option>
+            <option value="Never">Never</option>
+            <option value="Current">Current</option>
+            <option value="Previous">Previous</option>
+          </select>
+          <div id="cigarettes_per_day" style="margin-top: 10px; display: none;">
+            <label>Cigarettes per day:</label>
+            <select name="cigarettes_per_day">
+              <option value="">Select</option>
+              <option value="1–9/day">1–9/day</option>
+              <option value="10–19/day">10–19/day</option>
+              <option value=">20/day">>20/day</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Have you had a pap smear, HPV test or VIA test in the past?</label><br/>
+          <input type="radio" id="had_pap_smear_yes" name="had_pap_smear" value="yes" onchange="togglePapResult()" required> Yes<br/>
+          <input type="radio" id="had_pap_smear_no" name="had_pap_smear" value="no" onchange="togglePapResult()" required> No
+          <div id="pap_result" style="margin-top: 10px; display: none;">
+            <label>Was the result normal or abnormal?</label><br/>
+            <input type="radio" id="pap_result_normal" name="abnormal_pap_smear" value="no"> Normal<br/>
+            <input type="radio" id="pap_result_abnormal" name="abnormal_pap_smear" value="yes"> Abnormal
+          </div>
+        </div>
+        <div class="form-group">
+          <label>What is your HIV status?</label>
+          <select name="hiv_status" onchange="updateHIVPositive()" required>
+            <option value="">Select</option>
+            <option value="Negative">Negative</option>
+            <option value="Positive">Positive</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+          <input type="hidden" id="hiv_positive" name="hiv_positive" value="no">
+        </div>
+        <div class="form-group">
+          <label>How many children have you given birth to?</label>
+          <select name="parity" onchange="updateHighParity()" required>
+            <option value="">Select</option>
+            <option value="<5 children"><5 children</option>
+            <option value=">=5 children">≥5 children</option>
+          </select>
+          <input type="hidden" id="high_parity" name="high_parity" value="no">
+        </div>
+        <div class="form-group">
+          <label>What is your marital status?</label>
+          <select name="marital_status" required>
+            <option value="">Select</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Divorced">Divorced</option>
+          </select>
+        </div>
+        <button type="submit" class="next-btn">Calculate Risk</button>
+      </fieldset>
+    </form>
+  </div>
+
+  <script>
+    function showNextSection(currentId, nextId) {
+      document.getElementById(currentId).style.display = "none";
+      document.getElementById(nextId).style.display = "block";
+      updateProgress();
+    }
+
+    function toggleBleedingType() {
+      const bleedingYes = document.getElementById("abnormal_bleeding_yes").checked;
+      document.getElementById("bleeding_type").style.display = bleedingYes ? "block" : "none";
+      
+      // Reset the post-coital/post-menopausal flag when bleeding status changes
+      document.getElementById("is_post_coital_or_post_menopausal").value = "no";
+    }
+    
+    // Update post-coital/post-menopausal flag based on bleeding type selection
+    document.getElementById("bleeding_type_select").addEventListener("change", function() {
+      const bleedingType = this.value.toLowerCase();
+      const isPostCoitalOrMenopausal = 
+        bleedingType.includes("post-coital") || 
+        bleedingType.includes("postcoital") || 
+        bleedingType.includes("post-menopausal") || 
+        bleedingType.includes("postmenopausal");
+      
+      document.getElementById("is_post_coital_or_post_menopausal").value = 
+        isPostCoitalOrMenopausal ? "yes" : "no";
+    });
+
+    function toggleEthnicityOther() {
+      const ethnicity = document.getElementById("ethnicity").value;
+      document.getElementById("ethnicity_other").style.display = ethnicity === "Other" ? "block" : "none";
+    }
+
+    function toggleContraceptiveYears() {
+      const contraceptiveYes = document.getElementById("contraceptive_use_yes").checked;
+      document.getElementById("contraceptive_use_years").style.display = contraceptiveYes ? "block" : "none";
+      
+      // If yes is selected, update the oral_contraceptive_use field with the year value
+      if (contraceptiveYes) {
+        const yearSelect = document.querySelector('select[name="contraceptive_years"]');
+        document.querySelector('input[name="oral_contraceptive_use"]').value = yearSelect.value;
+        
+        // Add event listener to update value when selection changes
+        yearSelect.addEventListener('change', function() {
+          document.querySelector('input[name="oral_contraceptive_use"]').value = this.value;
+        });
+      }
+    }
+
+    function toggleCigarettesPerDay() {
+      const smokingStatus = document.querySelector('select[name="smoking"]').value;
+      document.getElementById("cigarettes_per_day").style.display = 
+        smokingStatus === "Current" || smokingStatus === "Previous" ? "block" : "none";
+      
+      // Update the smoking value with cigarettes per day when relevant
+      if (smokingStatus === "Current" || smokingStatus === "Previous") {
+        const cigaretteSelect = document.querySelector('select[name="cigarettes_per_day"]');
+        cigaretteSelect.addEventListener('change', function() {
+          document.querySelector('select[name="smoking"]').dataset.cigarettes = this.value;
+        });
+      }
+    }
+
+    function togglePapResult() {
+      const papYes = document.getElementById("had_pap_smear_yes").checked;
+      document.getElementById("pap_result").style.display = papYes ? "block" : "none";
+      
+      // Reset abnormal_pap_smear value if "No" is selected
+      if (!papYes) {
+        document.getElementById("abnormal_pap_smear").value = "no";
+      }
+    }
+    
+    function updateHIVPositive() {
+      const hivStatus = document.querySelector('select[name="hiv_status"]').value;
+      document.getElementById("hiv_positive").value = (hivStatus === "Positive") ? "yes" : "no";
+    }
+    
+    function updateHighParity() {
+      const parity = document.querySelector('select[name="parity"]').value;
+      document.getElementById("high_parity").value = (parity === ">=5 children") ? "yes" : "no";
+    }
+
+    function updateProgress() {
+      const sections = document.querySelectorAll(".section");
+      let completed = 0;
+      sections.forEach(section => {
+        if (section.style.display === "none") completed++;
+      });
+      const progress = (completed / sections.length) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
+      document.getElementById("progress-text").innerText = Math.round(progress) + "% Complete";
+    }
+
+    {% if risk_score %}
+      document.getElementById("progress-bar").style.width = "100%";
+      document.getElementById("progress-text").innerText = "Assessment Complete";
+    {% endif %}
+    
+    // Add event listeners to update form fields on form load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize bleeding type display
+      toggleBleedingType();
+      
+      // Initialize ethnicity other display
+      toggleEthnicityOther();
+      
+      // Initialize contraceptive years display
+      toggleContraceptiveYears();
+      
+      // Initialize cigarettes per day display
+      toggleCigarettesPerDay();
+      
+      // Initialize pap result display
+      togglePapResult();
+      
+      // Initialize HIV positive value
+      updateHIVPositive();
+      
+      // Initialize high parity value
+      updateHighParity();
+    });
+  </script>
+</body>
+</html>

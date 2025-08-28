@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: aiyohealth
+      POSTGRES_USER: aiyo
+      POSTGRES_PASSWORD: aiyo123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aiyo -d aiyohealth"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Flask Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URI=postgresql://aiyo:aiyo123@postgres:5432/aiyohealth
+      - FLASK_SECRET_KEY=dev_secret_key_change_in_production
+    volumes:
+      - ./backend:/app
+      - ./models:/app/models
+      - ./synthetic-data:/app/synthetic-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: python3 app.py
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev
+
+volumes:
+  postgres_data: 

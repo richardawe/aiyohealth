@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symptom History - Cervical Cancer Risk Assessment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .nav {
+      margin-bottom: 20px;
+    }
+    .nav a, .nav button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .nav button#logout-btn {
+      background-color: #d33;
+    }
+    .history table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .history th, .history td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .history th {
+      background-color: #f2f2f2;
+    }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Symptom History</h1>
+
+    <!-- Navigation -->
+    <div class="nav">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      {% if user.role == 'admin' %}
+        <a href="{{ url_for('admin_users') }}">Admin Dashboard</a>
+      {% endif %}
+      {% if user.role in ['admin', 'provider'] %}
+        <a href="{{ url_for('provider_patients') }}">Provider Dashboard</a>
+      {% endif %}
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="{{ category }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="history">
+      <h2>Your Assessment History</h2>
+      {% if history %}
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Risk Score</th>
+              <th>Risk Category</th>
+              <th>Scenario</th>
+              <th>Recommendations</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in history %}
+              <tr>
+                <td>{{ record.logged_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ record.risk_score }}</td>
+                <td>{{ record.risk_category }}</td>
+                <td>{{ record.scenario }}</td>
+                <td>
+                  <strong>Predefined:</strong> {{ record.predefined_recommendations | replace('\n', '<br>') | safe }}<br>
+                  <strong>Personalized:</strong>
+                  <ul>
+                    {% for rec in record.personalized_recommendations.split('\n') if record.personalized_recommendations %}
+                      <li>{{ rec }}</li>
+                    {% endfor %}
+                  </ul>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No symptom history available. Please complete an assessment to view your history.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      fetch('{{ url_for("logout") }}', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'include'
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Logout response:', data);
+        if (data.success) {
+          alert(data.message || 'Logged out successfully');
+          window.location.href = '{{ url_for("login") }}';
+        } else {
+          alert(data.message || 'Logout failed');
+        }
+      })
+      .catch(error => {
+        console.error('Logout error:', error);
+        window.location.href = '{{ url_for("login") }}';
+      });
+    });
+  </script>
+</body>
+</html>

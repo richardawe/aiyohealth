@@ -1,0 +1,51 @@
+def generate_recommendations(risk_category, patient_data):
+    recommendations = {
+        "general": "",
+        "personalized": []
+    }
+    age = patient_data.get("age", 35)
+    
+    if risk_category == "Low risk":
+        recommendations["general"] = """
+        Based on your responses, your risk of cervical cancer is low. However, it's important to:
+        
+        • Continue with routine cervical screening as recommended for your age group
+        • Report any changes in symptoms to your healthcare provider
+        • Practice safe sex and limit exposure to HPV (human papillomavirus)
+        """
+    elif risk_category == "Medium risk":
+        recommendations["general"] = """
+        Based on your responses, your risk of cervical cancer is moderate. We recommend:
+        
+        • Schedule an appointment with your healthcare provider within the next 2-4 weeks
+        • Discuss your symptoms and risk factors with your doctor
+        • You may need further testing such as a pelvic exam, HPV test, or colposcopy
+        • Continue regular cervical screening tests as recommended by your provider
+        """
+    else:
+        recommendations["general"] = """
+        Based on your responses, your risk of cervical cancer is high. We strongly recommend:
+        
+        • Contact your healthcare provider immediately (within the next week)
+        • Referral to a gynecologist or gynecologic oncologist may be necessary
+        • Further diagnostic testing is likely needed, such as colposcopy, biopsy, or imaging studies
+        • Do not postpone seeking medical attention as early diagnosis can significantly improve outcomes
+        """
+    
+    personalized = []
+    if patient_data.get("abnormal_pap_smear", False):
+        personalized.append("Follow up on your abnormal Pap test results with your healthcare provider")
+    if patient_data.get("hiv_positive", False):
+        personalized.append("As an HIV-positive individual, you should receive more frequent cervical screening. Consult your HIV care provider")
+    smoking = patient_data.get("smoking", "")
+    if "non-smoker" not in str(smoking).lower() and smoking:
+        personalized.append("Consider smoking cessation as smoking increases cervical cancer risk")
+    if age < 26:
+        personalized.append("If you haven't received the HPV vaccine, discuss this option with your healthcare provider")
+    if patient_data.get("abnormal_vaginal_bleeding", False) and patient_data.get("is_post_coital_or_post_menopausal", False):
+        personalized.append("Post-coital or post-menopausal bleeding requires prompt medical evaluation")
+    if patient_data.get("weight_loss", False) and patient_data.get("unusual_fatigue", False):
+        personalized.append("Your weight loss and fatigue should be evaluated by a healthcare provider")
+    
+    recommendations["personalized"] = personalized
+    return recommendations
