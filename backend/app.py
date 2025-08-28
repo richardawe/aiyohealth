@@ -80,7 +80,8 @@ CORS(app, resources={
             "http://localhost:5173",      # For local development
             "http://localhost:8000",      # For local development
             "http://localhost:3000",
-            "http://localhost",           # For Capacitor Android
+            "http://localhost",
+            "https://aiyohealth-frontend-production.up.railway.app",           # For Capacitor Android
   # Your production domain
             
         ],
