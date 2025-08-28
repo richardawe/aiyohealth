@@ -58,6 +58,14 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Configure database - Railway sets DATABASE_URL automatically
+database_url = os.environ.get('DATABASE_URL')
+if not database_url:
+    # Fallback to your specific Railway URL if DATABASE_URL isn't set
+    database_url = 'postgresql://postgres:KpuuvQOPeNZcurCyOaOrEMqjQXxgokBO@postgres.railway.internal:5432/railway'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
 db = SQLAlchemy(app)
