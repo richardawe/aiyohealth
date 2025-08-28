@@ -15,7 +15,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://aiyohealth-production-9439.up.railway.app/',
         changeOrigin: true,
         secure: false,
         ws: true,

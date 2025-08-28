@@ -22,7 +22,7 @@ const AuthProvider = ({ children }) => {
     const initializeAuth = async () => {
       try {
         // Try to verify the session first
-        const response = await fetch(`${API_BASE_URL}/current-user`, {
+        const response = await fetch(`${API_BASE_URL}/api/current-user`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/logout`, {
+      const response = await fetch(`${API_BASE_URL}/api/logout`, {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
