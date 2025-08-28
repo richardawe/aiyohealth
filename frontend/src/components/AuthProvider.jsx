@@ -3,7 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 
 const AuthContext = createContext();
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://aiyohealth-production-9439.up.railway.app';
 
 const useAuth = () => {
   const context = useContext(AuthContext);
