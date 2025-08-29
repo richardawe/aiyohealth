@@ -626,7 +626,7 @@ def generate_recommendations(risk_category, patient_data):
     
     
 # CSRF token endpoint
-@app.route('/api/get-csrf-token', methods=['GET'])
+@app.route('/api/csrf-token', methods=['GET'])
 def get_csrf_token():
     try:
         token = generate_csrf()
@@ -816,7 +816,7 @@ def login():
         'message': 'Method not allowed'
     }), 405
     
-    
+
 @app.route('/api/profile', methods=['GET'])
 def profile():
     try:
