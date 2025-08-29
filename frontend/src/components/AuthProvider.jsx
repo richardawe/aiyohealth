@@ -17,18 +17,53 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [csrfToken, setCsrfToken] = useState(null);
+
+  // Function to get CSRF token
+  const getCsrfToken = async () => {
+    if (csrfToken) return csrfToken;
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/csrf-token`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      setCsrfToken(data.csrf_token);
+      return data.csrf_token;
+    } catch (error) {
+      console.error('Error getting CSRF token:', error);
+      return null;
+    }
+  };
+
+  // Helper function for authenticated requests
+  const makeAuthenticatedRequest = async (url, options = {}) => {
+    const token = await getCsrfToken();
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...options.headers
+    };
+
+    // Add CSRF token for POST, PUT, DELETE requests
+    if (options.method && options.method !== 'GET') {
+      headers['X-CSRFToken'] = token;
+    }
+
+    return fetch(url, {
+      ...options,
+      headers,
+      credentials: 'include'
+    });
+  };
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         // Try to verify the session first
-        const response = await fetch(`${API_BASE_URL}/current-user`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          credentials: 'include'
+        const response = await makeAuthenticatedRequest(`${API_BASE_URL}/current-user`, {
+          method: 'GET'
         });
         
         const data = await response.json();
@@ -79,12 +114,8 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/logout`, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        credentials: 'include'
+      const response = await makeAuthenticatedRequest(`${API_BASE_URL}/logout`, {
+        method: 'POST'
       });
 
       if (!response.ok) {
@@ -94,6 +125,7 @@ const AuthProvider = ({ children }) => {
       await Preferences.remove({ key: 'authUser' });
       setUser(null);
       setToken(null);
+      setCsrfToken(null); // Clear CSRF token on logout
     } catch (error) {
       console.error('Error during logout:', error);
       throw new Error('Failed to logout');
@@ -108,7 +140,9 @@ const AuthProvider = ({ children }) => {
         login,
         logout,
         isLoading,
-        apiBaseUrl: API_BASE_URL
+        apiBaseUrl: API_BASE_URL,
+        makeAuthenticatedRequest, // Expose this for use in other components
+        getCsrfToken
       }}
     >
       {children}
