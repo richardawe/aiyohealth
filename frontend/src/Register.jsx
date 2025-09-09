@@ -667,33 +667,6 @@ export const Register = () => {
             </div>
             <div className="col-lg-8">
               <div className="footer-contact-box">
-                <div className="footer-links footer-contact-item">
-                  <h3>Contact:</h3>
-                  <ul>
-                    <li>
-                      <i className="fa-solid fa-phone"></i>
-                      <a href="tel:+234123456789">(+234) 123456789</a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="footer-links footer-contact-item">
-                  <h3>E-mail:</h3>
-                  <ul>
-                    <li>
-                      <i className="fa-solid fa-envelope"></i>
-                      <a href="mailto:domainname@example.com">domainname@example.com</a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="footer-links footer-contact-item">
-                  <h3>Address:</h3>
-                  <ul>
-                    <li>
-                      <i className="fa-solid fa-location-dot"></i>
-                      123 High Street LN1 1AB, UK
-                    </li>
-                  </ul>
-                </div>
               </div>
             </div>
             <div className="col-lg-12">

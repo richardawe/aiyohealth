@@ -269,32 +269,6 @@ export const Monitoring = () => {
             </div>
             <div className="col-lg-8">
               <div className="footer-contact-box">
-                <div className="footer-links footer-contact-item">
-                  <h3>Contact:</h3>
-                  <ul>
-                    <li>
-                      <i className="fa-solid fa-phone"></i>
-                      <a href="tel:123456789">(+22) 123 456 789</a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="footer-links footer-contact-item">
-                  <h3>E-mail:</h3>
-                  <ul>
-                    <li>
-                      <i className="fa-solid fa-envelope"></i>
-                      <a href="mailto:domainname@gmail.com">domainname@gmail.com</a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="footer-links footer-contact-item">
-                  <h3>Address:</h3>
-                  <ul>
-                    <li>
-                      <i className="fa-solid fa-location-dot"></i>123 High Street LN1 1AB Street UK
-                    </li>
-                  </ul>
-                </div>
               </div>
             </div>
             <div className="col-lg-12">
