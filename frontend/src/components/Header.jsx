@@ -36,9 +36,6 @@ const Header = () => {
                 </ul>
               </div>
               <div className="header-contact-btn">
-                <a href="tel:123456789" className="header-contact-now">
-                  <i className="fa-solid fa-phone"></i>(+22) 123 456 789
-                </a>
                 <Link to="/login" className="btn-default">Portal</Link>
               </div>
             </div>

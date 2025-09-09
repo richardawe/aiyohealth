@@ -35,18 +35,6 @@ const Hero = () => {
                 </div>
               </div>
               <div className="hero-review-box wow fadeInUp" data-wow-delay="0.6s">
-                <ul>
-                  <li><img src="/images/icon-google.svg" alt="Google icon" /></li>
-                  <li>4.5</li>
-                  <li>
-                    <i className="fa-solid fa-star"></i>
-                    <i className="fa-solid fa-star"></i>
-                    <i className="fa-solid fa-star"></i>
-                    <i className="fa-solid fa-star"></i>
-                    <i className="fa-solid fa-star-half-stroke"></i>
-                  </li>
-                  <li>(1000+ review)</li>
-                </ul>
               </div>
             </div>
           </div>

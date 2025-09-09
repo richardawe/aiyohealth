@@ -77,22 +77,12 @@ const Footer = () => {
             </div>
             <div className="footer-contact-box">
               <div className="footer-links footer-contact-item">
-                <h3>Contact:</h3>
-                <ul>
-                  <li><i className="fa-solid fa-phone" aria-label="Phone"></i><a href="tel:123456789">(+22) 123 456 789</a></li>
-                </ul>
-              </div>
-              <div className="footer-links footer-contact-item">
                 <h3>Email:</h3>
                 <ul>
-                  <li><i className="fa-solid fa-envelope" aria-label="Email"></i><a href="mailto:support@Cervicalcancercare.com">support@Cervicalcancercare.com</a></li>
+                  <li><i className="fa-solid fa-envelope" aria-label="Email"></i><a href="mailto:aiyohealth@gmail.com">aiyohealth@gmail.com</a></li>
                 </ul>
               </div>
               <div className="footer-links footer-contact-item">
-                <h3>Address:</h3>
-                <ul>
-                  <li><i className="fa-solid fa-location-dot" aria-label="Location"></i>123 High Street, LN1 1AB, UK</li>
-                </ul>
               </div>
             </div>
           </div>
